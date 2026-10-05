@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+/* Alice Brand Design Tokens */
+:root {
+  /* Primary Colors - Brown/Beige Palette from Figma */
+  --color-alice-brown: #73615F1F;
+  --color-alice-brown-dark: #6B5844;
+  --color-alice-brown-light: #A89580;
+  --color-alice-cream: #F5F5F0;
+  --color-alice-beige: #E8E4DC;
+  --color-alice-sand: #D4CFC4 !important;
+  
+  /* Booking Status Colors */
+  --color-status-current: #10B981;      /* Green - Checked In */
+  --color-status-checkin-pending: #F59E0B; /* Orange */
+  --color-status-checkout-pending: #FBBF24; /* Yellow */
+  --color-status-checkout-upcoming: #8B5CF6; /* Purple */
+  --color-status-upcoming: #3B82F6;     /* Blue */
+  --color-status-noshow: #EF4444;       /* Red */
+  --color-status-cancelled: #EF4444;    /* Red */
+  --color-status-checked-out: #6B7280;  /* Gray */
+  
+  /* Neutral Colors */
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1F2937;
+  --color-gray-900: #111827;
+}
+
+/* Custom Theme Configuration */
+@theme {
+  /* Font Families */
+  --font-display: 'Gilroy';
+  --font-sans: 'Felgine';
+  
+  /* Alice Brand Colors */
+  --color-alice-brown: #8B7355;
+  --color-alice-brown-dark: #6B5844;
+  --color-alice-brown-light: #A89580;
+  --color-alice-cream: #F5F5F0;
+  --color-alice-beige: #E8E4DC;
+  --color-alice-sand: #D4CFC4 !important;
+  
+  /* Status Colors */
+  --color-status-current: #10B981;
+  --color-status-checkin-pending: #F59E0B;
+  --color-status-checkout-pending: #FBBF24;
+  --color-status-checkout-upcoming: #8B5CF6;
+  --color-status-upcoming: #3B82F6;
+  --color-status-noshow: #EF4444;
+  --color-status-cancelled: #EF4444;
+  --color-status-checked-out: #6B7280;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-alice-cream);
+  color: var(--color-gray-800);
+  min-height: 100vh;
+}
+
+/* Display Font Class for Headers */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* FullCalendar Custom Styles */
+.fc {
+  --fc-border-color: var(--color-alice-sand);
+  --fc-page-bg-color: white;
+  --fc-neutral-bg-color: var(--color-alice-cream);
+  --fc-today-bg-color: rgba(139, 115, 85, 0.08);
+}
+
+.fc .fc-scrollgrid {
+  border-color: var(--color-alice-sand);
+}
+
+.fc .fc-col-header-cell {
+  background-color: var(--color-alice-cream);
+  font-weight: 500;
+}
+
+.fc-theme-standard td, 
+.fc-theme-standard th {
+  border-color: var(--color-alice-sand);
+}
+
+/* Resource Timeline Customization */
+.fc-resource-timeline .fc-resource-group {
+  background-color: var(--color-alice-beige);
+}
+
+.fc .fc-datagrid-cell-cushion {
+  padding: 8px 12px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-alice-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-alice-sand);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-alice-brown-light);
+}
+
+/* Focus Styles for Accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-alice-brown);
+  outline-offset: 2px;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: var(--color-alice-brown);
+  color: white;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.2s ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Responsive utilities */
+@media (max-width: 1024px) {
+  .calendar-wrapper .fc-datagrid-cell-frame {
+    min-height: 44px;
+  }
+  
+  .calendar-wrapper .fc-timeline-slot {
+    min-width: 60px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-wrapper {
+    font-size: 12px;
+  }
+  
+  .calendar-wrapper .fc-datagrid-cell-cushion {
+    padding: 4px 8px;
+  }
+  
+  .calendar-wrapper .fc-timeline-slot {
+    min-width: 50px !important;
+  }
+  
+  /* Hide property photos on mobile */
+  .calendar-wrapper img {
+    display: none;
+  }
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Button press effect */
+.press-effect:active {
+  transform: scale(0.98);
+}
+
+/* Card highlight on hover */
+.card-highlight {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.card-highlight:hover {
+  background-color: rgba(139, 115, 85, 0.05);
+}
+

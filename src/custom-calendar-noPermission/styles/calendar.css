@@ -1,0 +1,648 @@
+/**
+ * Custom Calendar Styles
+ * Uses CSS custom properties for theming
+ */
+
+/* ============================================
+   CSS Custom Properties (Theme)
+   ============================================ */
+.custom-calendar {
+  --calendar-sidebar-width: 280px;
+  --calendar-row-height: 56px;
+  --calendar-header-height: 48px;
+  --calendar-day-width-daily: 80px;
+  --calendar-day-width-monthly: 48px;
+  
+  /* Colors - matches Alice design system */
+  --calendar-bg: #FAFAF8;
+  --calendar-border: #E5E2DC;
+  --calendar-header-bg: #F5F3EF;
+  --calendar-today-bg: rgba(139, 115, 85, 0.08);
+  --calendar-weekend-bg: rgba(139, 115, 85, 0.04);
+  --calendar-hover-bg: rgba(139, 115, 85, 0.06);
+  
+  /* Text colors */
+  --calendar-text-primary: #1F1F1F;
+  --calendar-text-secondary: #6B6B6B;
+  --calendar-text-muted: #9B9B9B;
+  
+  /* Booking status colors */
+  --status-checkin-upcoming-bg: #EFF6FF;
+  --status-checkin-upcoming-border: #3B82F6;
+  --status-checkin-pending-bg: #FFF7ED;
+  --status-checkin-pending-border: #F59E0B;
+  --status-checked-in-bg: #ECFDF5;
+  --status-checked-in-border: #10B981;
+  --status-checkout-pending-bg: #FEFCE8;
+  --status-checkout-pending-border: #FBBF24;
+  --status-checkout-upcoming-bg: #F5F3FF;
+  --status-checkout-upcoming-border: #8B5CF6;
+  --status-checked-out-bg: #F9FAFB;
+  --status-checked-out-border: #6B7280;
+  --status-cancelled-bg: #FEF2F2;
+  --status-cancelled-border: #EF4444;
+  --status-no-show-bg: #FEF2F2;
+  --status-no-show-border: #EF4444;
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+.custom-calendar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--calendar-bg);
+  font-family: 'Gilroy';
+  overflow: hidden;
+}
+
+.custom-calendar__container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid var(--calendar-border);
+  border-radius: 0px;
+  background: #f2f2f2;
+}
+
+/* ============================================
+   Sidebar Styles
+   ============================================ */
+.custom-calendar__sidebar {
+  width: var(--calendar-sidebar-width);
+  flex-shrink: 0;
+  border-right: 1px solid var(--calendar-border);
+  display: flex;
+  flex-direction: column;
+  background: #f2f2f2;
+}
+
+.custom-calendar__sidebar-header {
+  height: var(--calendar-header-height);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--calendar-border);
+  background: var(--calendar-header-bg);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--calendar-text-secondary);
+}
+
+.custom-calendar__sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Property Tree */
+.property-tree__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--calendar-border);
+  min-height: var(--calendar-row-height);
+}
+
+.property-tree__item:hover {
+  background-color: var(--calendar-hover-bg);
+}
+
+.property-tree__item--property {
+  padding-left: 8px;
+}
+
+.property-tree__item--room {
+  padding-left: 32px;
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.property-tree__item--bed {
+  padding-left: 56px;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.property-tree__chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--calendar-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.property-tree__chevron--expanded {
+  transform: rotate(90deg);
+}
+
+.property-tree__photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 0px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.property-tree__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.property-tree__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--calendar-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.property-tree__meta {
+  font-size: 12px;
+  color: var(--calendar-text-secondary);
+}
+
+/* ============================================
+   Timeline Grid Styles
+   ============================================ */
+.custom-calendar__timeline {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.custom-calendar__date-header {
+  height: var(--calendar-header-height);
+  display: flex;
+  border-bottom: 1px solid var(--calendar-border);
+  background: var(--calendar-header-bg);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.custom-calendar__date-header-scroll {
+  display: flex;
+  overflow-x: hidden;
+}
+
+.date-header__cell {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--calendar-border);
+  padding: 4px 0;
+}
+
+.date-header__cell--today {
+  background-color: var(--calendar-today-bg);
+}
+
+.date-header__cell--weekend {
+  background-color: var(--calendar-weekend-bg);
+}
+
+.date-header__day {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--calendar-text-secondary);
+  text-transform: uppercase;
+}
+
+.date-header__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--calendar-text-primary);
+}
+
+.date-header__cell--today .date-header__date {
+  color: var(--color-alice-brown, #8B7355);
+}
+
+/* Timeline Content */
+.custom-calendar__timeline-content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.timeline-grid {
+  position: relative;
+  min-height: 100%;
+}
+
+.timeline-grid__row {
+  display: flex;
+  position: relative;
+  min-height: var(--calendar-row-height);
+  border-bottom: 1px solid var(--calendar-border);
+}
+
+.timeline-grid__row--property {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.timeline-grid__row--room {
+  background-color: #f2f2f2;
+}
+
+.timeline-grid__row--bed {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.timeline-grid__cell {
+  flex-shrink: 0;
+  border-right: 1px solid var(--calendar-border);
+  position: relative;
+}
+
+.timeline-grid__cell--today {
+  background-color: var(--calendar-today-bg);
+}
+
+.timeline-grid__cell--weekend {
+  background-color: var(--calendar-weekend-bg);
+}
+
+/* ============================================
+   Booking Card Styles
+   ============================================ */
+.booking-card {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: 0px;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  z-index: 5;
+}
+
+.booking-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.booking-card--checkin-upcoming {
+  background-color: var(--status-checkin-upcoming-bg);
+  border-color: var(--status-checkin-upcoming-border);
+}
+
+.booking-card--checkin-pending {
+  background-color: var(--status-checkin-pending-bg);
+  border-color: var(--status-checkin-pending-border);
+}
+
+.booking-card--checked-in {
+  background-color: var(--status-checked-in-bg);
+  border-color: var(--status-checked-in-border);
+}
+
+.booking-card--checkout-pending {
+  background-color: var(--status-checkout-pending-bg);
+  border-color: var(--status-checkout-pending-border);
+}
+
+.booking-card--checkout-upcoming {
+  background-color: var(--status-checkout-upcoming-bg);
+  border-color: var(--status-checkout-upcoming-border);
+}
+
+.booking-card--checked-out {
+  background-color: var(--status-checked-out-bg);
+  border-color: var(--status-checked-out-border);
+  opacity: 0.7;
+}
+
+.booking-card--cancelled,
+.booking-card--no-show {
+  background-color: var(--status-no-show-bg);
+  border-color: var(--status-no-show-border);
+}
+
+.booking-card--no-show .booking-card__name {
+  text-decoration: line-through;
+}
+
+.booking-card__photo {
+  width: 28px;
+  height: 28px;
+  border-radius: 0%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.booking-card__initials {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4B5563;
+  flex-shrink: 0;
+}
+
+.booking-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.booking-card__name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--calendar-text-primary);
+  #f2f2f2-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-card__dates {
+  font-size: 10px;
+  color: var(--calendar-text-secondary);
+  #f2f2f2-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-card__badge {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background-color: rgba(251, 191, 36, 0.2);
+  color: #92400E;
+  margin-left: 4px;
+}
+
+/* ============================================
+   Maintenance Block Styles
+   ============================================ */
+.maintenance-block {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 2px dashed #9CA3AF;
+  background-color: #F9FAFB;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(156, 163, 175, 0.1) 5px,
+    rgba(156, 163, 175, 0.1) 10px
+  );
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.maintenance-block:hover {
+  background-color: #F3F4F6;
+}
+
+.maintenance-block__icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.maintenance-block__label {
+  font-size: 11px;
+  color: #6B7280;
+  #f2f2f2-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   Availability Cell Styles
+   ============================================ */
+.availability-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 11px;
+  color: var(--calendar-text-secondary);
+}
+
+.availability-cell--zero {
+  color: #DC2626;
+}
+
+/* ============================================
+   Scroll Synchronization
+   ============================================ */
+.custom-calendar__timeline-content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-calendar__timeline-content::-webkit-scrollbar-track {
+  background: #F1F1F1;
+}
+
+.custom-calendar__timeline-content::-webkit-scrollbar-thumb {
+  background: #C1C1C1;
+  border-radius: 4px;
+}
+
+.custom-calendar__timeline-content::-webkit-scrollbar-thumb:hover {
+  background: #A1A1A1;
+}
+
+/* ============================================
+   Loading & Empty States
+   ============================================ */
+.custom-calendar__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+}
+
+.custom-calendar__loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--calendar-border);
+  border-top-color: var(--color-alice-brown, #8B7355);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.custom-calendar__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 32px;
+}
+
+.custom-calendar__empty-text {
+  font-size: 14px;
+  color: var(--calendar-text-secondary);
+}
+
+/* ============================================
+   Stats Row (Split: Sidebar + Timeline)
+   ============================================ */
+
+/* Stats Row Sidebar (left side - labels) */
+.custom-calendar__stats-row-sidebar {
+  border-bottom: 1px solid var(--calendar-border);
+  background: #f2f2f2;
+}
+
+.stats-sidebar-header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--calendar-border);
+  background-color: #F8F5F1;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.stats-sidebar-header:hover {
+  background-color: #F0E9E1;
+}
+
+.stats-sidebar-details {
+  background: #f2f2f2;
+}
+
+.stats-sidebar-row {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--calendar-border);
+}
+
+/* Stats Row Timeline (right side - data) */
+.custom-calendar__stats-row-timeline {
+  border-bottom: 1px solid var(--calendar-border);
+  background: #f2f2f2;
+  overflow: hidden;
+}
+
+.custom-calendar__stats-row-scroll {
+  overflow: hidden;
+}
+
+.custom-calendar__stats-row-track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.stats-timeline-header {
+  display: flex;
+  height: 48px;
+  border-bottom: 1px solid var(--calendar-border);
+}
+
+.stats-timeline-details {
+  background: #f2f2f2;
+}
+
+.stats-timeline-row {
+  display: flex;
+  height: 40px;
+  border-bottom: 1px solid var(--calendar-border);
+}
+
+.stats-timeline-cell {
+  flex-shrink: 0;
+  border-right: 1px solid var(--calendar-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  /* padding: 0 29px; */
+}
+
+/* ============================================
+   At a Glance Dashboard
+   ============================================ */
+.at-a-glance-dashboard {
+  /* background-color: #f2f2f2; */
+  border-bottom: 1px solid var(--calendar-border);
+ 
+}
+
+/* Booking Card Times (for same-day check-in/check-out) */
+.booking-card__times {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.booking-card__time-in,
+.booking-card__time-out {
+  font-weight: 500;
+}
+
+/* ============================================
+   Modal Base Styles (Modals use Tailwind classes)
+   ============================================ */
+/* Modals are styled inline with Tailwind CSS */
+/* Additional custom modal styles can be added here if needed */
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 1024px) {
+  .custom-calendar {
+    --calendar-sidebar-width: 240px;
+    --calendar-day-width-daily: 70px;
+    --calendar-day-width-monthly: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-calendar {
+    --calendar-sidebar-width: 200px;
+    --calendar-day-width-daily: 60px;
+    --calendar-day-width-monthly: 36px;
+  }
+  
+  /* Hide times on very small booking cards */
+  .booking-card__times {
+    display: none;
+  }
+}
