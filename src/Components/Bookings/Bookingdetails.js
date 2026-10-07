@@ -1,6 +1,8 @@
 "use client"
 import React from 'react'
 import Header from '../Header/Header'
+import SourceBadge from '../Integrations/SourceBadge'; // integration: alice_v3_claude — w7
+import AllocationSummary from '../Integrations/AllocationSummary'; // integration: alice_v3_claude — w7
 import { useEffect, useState } from "react";
 import { Row, Col, Container, Button, Tabs, Tab, Table, Modal, Form, Accordion, Card } from 'react-bootstrap';
 import Link from 'next/link';
@@ -971,8 +973,9 @@ export default function Bookingdetails() {
                             <ul className='d-flex align-items-center breadcrumb-list'>
                                 {/* <li><a href=''>Home</a></li> */}
                                 <li><Link href='./Bookings'>Bookings</Link></li>
-                                <li>Booking for {bookingDetailData?.traveler?.name} - Booking id: {bookingDetailData?.booking_number} </li>
+                                <li>Booking for {bookingDetailData?.traveler?.name} - Booking id: {bookingDetailData?.booking_number} <SourceBadge source={bookingDetailData?.booking_source} reference={bookingDetailData?.source_reference} showAlice />{/* integration: alice_v3_claude — w7 */}</li>
                             </ul>
+                            <AllocationSummary allocation={bookingDetailData?.allocation} />{/* integration: alice_v3_claude — w7 */}
                         </Col>
                     </Row>
                 </Container>

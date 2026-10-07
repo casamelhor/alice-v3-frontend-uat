@@ -8,6 +8,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { BookingsListAPI, DynamicFiltersAPI, ExportBookingAPI } from "@/services/provider";
+import SourceBadge from "../Integrations/SourceBadge"; // integration: alice_v3_claude — w7
 import Pagination from 'react-bootstrap/Pagination';
 import { ModifyCheckout } from "../commons/ModifyCheckout";
 import { ModifyDateModal } from "../commons/ModifyDateModal";
@@ -120,6 +121,7 @@ export default function Allbookings() {
         sort_by: "",
         page: 1,
         page_size: 10,  // you can set default too
+        booking_source: "", // integration: alice_v3_claude — w7 — Source filter (Alice / Quest2Travel / MakeMyTrip)
         traveler_uid: paramUid ? paramUid : ''
     });
 
@@ -939,6 +941,23 @@ export default function Allbookings() {
                                 </div>
                             </Col>
 
+                            {/* integration: alice_v3_claude — w7 — Source filter */}
+                            <Col md={12} className="d-flex justify-content-end mb-2">
+                                <label className="d-flex align-items-center gap-2 mb-0" style={{ fontSize: 14 }}>
+                                    Source
+                                    <select
+                                        className="form-select form-select-sm"
+                                        style={{ width: 180 }}
+                                        value={filteredOptions.booking_source}
+                                        onChange={(e) => setFilteredOptions({ ...filteredOptions, page: 1, booking_source: e.target.value })}
+                                    >
+                                        <option value="">All sources</option>
+                                        <option value="alice">Alice</option>
+                                        <option value="q2t">Quest2Travel</option>
+                                        <option value="mmt">MakeMyTrip</option>
+                                    </select>
+                                </label>
+                            </Col>
                             <Col md={12} >
                                 <Tabs
                                     defaultActiveKey="all"
@@ -1057,7 +1076,7 @@ export default function Allbookings() {
                                                                     <td>
                                                                         <div className='d-flex align-items-center gap-3'>
                                                                             {assignment.id}
-
+                                                                            <SourceBadge source={assignment.booking_source} reference={assignment.source_reference} compact />{/* integration: alice_v3_claude — w7 */}
                                                                         </div>
 
                                                                     </td>
@@ -1465,7 +1484,7 @@ export default function Allbookings() {
                                                                 <li  > Booked <span>{formatBookingDates(assignment.check_in_date, null, "booked")} </span> by {assignment.created_by_name}</li>
 
 
-                                                                <li  > Booking Id <span>{assignment.booking_number} </span></li>
+                                                                <li  > Booking Id <span>{assignment.booking_number} </span><SourceBadge source={assignment.booking_source} reference={assignment.source_reference} />{/* integration: alice_v3_claude — w7 */}</li>
                                                             </ul>
 
                                                         </div>
@@ -1586,7 +1605,7 @@ export default function Allbookings() {
                                                                     <td>
                                                                         <div className='d-flex align-items-center gap-3'>
                                                                             {assignment.id}
-
+                                                                            <SourceBadge source={assignment.booking_source} reference={assignment.source_reference} compact />{/* integration: alice_v3_claude — w7 */}
                                                                         </div>
 
                                                                     </td>
@@ -2090,7 +2109,7 @@ export default function Allbookings() {
                                                                 <li  > Booked <span>{formatBookingDates(assignment.check_in_date, null, "booked")} </span> by {assignment.created_by_name}</li>
 
 
-                                                                <li  > Booking Id <span>{assignment.booking_number} </span></li>
+                                                                <li  > Booking Id <span>{assignment.booking_number} </span><SourceBadge source={assignment.booking_source} reference={assignment.source_reference} />{/* integration: alice_v3_claude — w7 */}</li>
                                                             </ul>
 
                                                         </div>
@@ -2203,7 +2222,7 @@ export default function Allbookings() {
                                                                     <td>
                                                                         <div className='d-flex align-items-center gap-3'>
                                                                             {assignment.id}
-
+                                                                            <SourceBadge source={assignment.booking_source} reference={assignment.source_reference} compact />{/* integration: alice_v3_claude — w7 */}
                                                                         </div>
 
                                                                     </td>
@@ -2710,7 +2729,7 @@ export default function Allbookings() {
                                                                 <li  > Booked <span>{formatBookingDates(assignment.check_in_date, null, "booked")} </span> by {assignment.created_by_name}</li>
 
 
-                                                                <li  > Booking Id <span>{assignment.booking_number} </span></li>
+                                                                <li  > Booking Id <span>{assignment.booking_number} </span><SourceBadge source={assignment.booking_source} reference={assignment.source_reference} />{/* integration: alice_v3_claude — w7 */}</li>
                                                             </ul>
 
                                                         </div>
@@ -2824,7 +2843,7 @@ export default function Allbookings() {
                                                                     <td>
                                                                         <div className='d-flex align-items-center gap-3'>
                                                                             {assignment.id}
-
+                                                                            <SourceBadge source={assignment.booking_source} reference={assignment.source_reference} compact />{/* integration: alice_v3_claude — w7 */}
                                                                         </div>
 
                                                                     </td>
@@ -3328,7 +3347,7 @@ export default function Allbookings() {
                                                                 <li  > Booked <span>{formatBookingDates(assignment.check_in_date, null, "booked")} </span> by {assignment.created_by_name}</li>
 
 
-                                                                <li  > Booking Id <span>{assignment.booking_number} </span></li>
+                                                                <li  > Booking Id <span>{assignment.booking_number} </span><SourceBadge source={assignment.booking_source} reference={assignment.source_reference} />{/* integration: alice_v3_claude — w7 */}</li>
                                                             </ul>
 
                                                         </div>
@@ -3442,7 +3461,7 @@ export default function Allbookings() {
                                                                     <td>
                                                                         <div className='d-flex align-items-center gap-3'>
                                                                             {assignment.id}
-
+                                                                            <SourceBadge source={assignment.booking_source} reference={assignment.source_reference} compact />{/* integration: alice_v3_claude — w7 */}
                                                                         </div>
 
                                                                     </td>
@@ -3921,7 +3940,7 @@ export default function Allbookings() {
                                                                 <li  > Booked <span>{formatBookingDates(assignment.check_in_date, null, "booked")} </span> by {assignment.created_by_name}</li>
 
 
-                                                                <li  > Booking Id <span>{assignment.booking_number} </span></li>
+                                                                <li  > Booking Id <span>{assignment.booking_number} </span><SourceBadge source={assignment.booking_source} reference={assignment.source_reference} />{/* integration: alice_v3_claude — w7 */}</li>
                                                             </ul>
 
                                                         </div>

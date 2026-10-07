@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import { Toaster } from "react-hot-toast";
 import { getItemLocalStorage } from "@/utils/browserStorage";
 import { checkPermission } from "@/utils/helper";
+import PropertyChannelsTab from "../Integrations/PropertyChannelsTab"; // integration: alice_v3_claude — w7
 
 
 
@@ -48,6 +49,8 @@ export default function PropertyDetails() {
 
     const permissionArray = JSON.parse(getItemLocalStorage("user_permissions"));
     const permissionProperty = checkPermission(permissionArray, "property");
+    const permissionIntegration = checkPermission(permissionArray, "integration"); // integration: alice_v3_claude — w7
+    const canListIntegration = permissionIntegration === true || permissionIntegration?.can_list; // integration: alice_v3_claude — w7
     const permissionPhotos = checkPermission(permissionArray, "property_photo")
     const permissionPropertyAssign = checkPermission(permissionArray, "property_assignment");
     const permissionCompany = checkPermission(permissionArray, "company");
@@ -1278,6 +1281,12 @@ export default function PropertyDetails() {
                                         <Tab6 propertyDetail={propertyDetail} setIsEditSpaceRule={setIsEditSpaceRule} canUpdateProperty={canUpdateProperty} />
                                     )}
                                 </Tab>
+                                {/* integration: alice_v3_claude — w7 — Channels tab */}
+                                {canListIntegration && (
+                                    <Tab eventKey="channels" title="Channels">
+                                        <PropertyChannelsTab propertyId={propertyDetail?.id} />
+                                    </Tab>
+                                )}
                             </Tabs>
                         </Col>
                     </Row>
