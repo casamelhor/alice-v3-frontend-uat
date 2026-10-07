@@ -27,6 +27,16 @@ import { checkPermission } from "@/utils/helper";
 
 export default function Allbookings() {
 
+    const getId = (item) => item?.uid ?? item?.id;
+
+    const toLocalDateString = (d) => {
+        if (!d) return "";
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    };
+
     const permissionArray = JSON.parse(getItemLocalStorage("user_permissions"));
     const permissionBookingMain = checkPermission(permissionArray, "booking");
     const permissionBookingCheckin = checkPermission(permissionArray, "booking_checkin");
@@ -118,7 +128,10 @@ export default function Allbookings() {
     const [booking_count, setBooking_count] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedBookedBy, setSelectedBookedBy] = useState(null);
-    const [selectedCompanies, setSelectedCompanies] = useState([]);
+    // const [selectedCompanies, setSelectedCompanies] = useState([]);
+    const [selectedCompanies, setSelectedCompanies] = useState(
+        paramCompanyUid ? [String(paramCompanyUid)] : []
+    );
     const [tempDateFilter, setTempDateFilter] = useState({
         date_type: "date_from",
         date_from: "",
@@ -222,18 +235,38 @@ export default function Allbookings() {
     //     setLocationInput("");
     //     setPropertyInput("");
     // };
-    const filterClose = () => {
-        filtersetShow(false);
-        setFilteredOptions({
-            ...filteredOptions,
-            companies: paramCompanyUid ? paramCompanyUid : "",
-            properties: "",
-            locations: "",
-            booked_by: "",
-            date_type: "",
-            date_from: "",
-            date_to: "",
-        });
+    // const filterClose = () => {
+    //     filtersetShow(false);
+    //     setFilteredOptions({
+    //         ...filteredOptions,
+    //         companies: paramCompanyUid ? paramCompanyUid : "",
+    //         properties: "",
+    //         locations: "",
+    //         booked_by: "",
+    //         date_type: "",
+    //         date_from: "",
+    //         date_to: "",
+    //     });
+    //     setSelectedCompanies([]);
+    //     setOptionsBookedByList([]);
+    //     setOptionsLocationList([]);
+    //     setOptionsPropertyList([]);
+    //     setInactiveFrom(null);
+    //     setInactiveTo(null);
+    //     setBookedByInput("");
+    //     setLocationInput("");
+    //     setPropertyInput("");
+    // };
+    // const filterShow = () => {
+    //     filtersetShow(true);
+    //     setFilteredOptions({ ...filteredOptions, date_type: "date_from" })
+    // };
+    const filterShow = () => filtersetShow(true);
+
+    // Closing the modal should NOT wipe applied filters
+    const filterClose = () => filtersetShow(false);
+
+    const clearAllFilters = () => {
         setSelectedCompanies([]);
         setOptionsBookedByList([]);
         setOptionsLocationList([]);
@@ -243,11 +276,27 @@ export default function Allbookings() {
         setBookedByInput("");
         setLocationInput("");
         setPropertyInput("");
+        setTempDateFilter({ date_type: "date_from", date_from: "", date_to: "" });
+        setFilteredOptions(prev => ({
+            ...prev,
+            // companies: paramCompanyUid || "",
+            companies: "",
+            properties: "",
+            locations: "",
+            booked_by: "",
+            date_type: "",
+            date_from: "",
+            date_to: "",
+            page: 1,
+        }));
+        // filtersetShow(false);
     };
-    const filterShow = () => {
-        filtersetShow(true);
-        setFilteredOptions({ ...filteredOptions, date_type: "date_from" })
-    };
+
+    const getBookedByName = (key) =>
+        filtersFromRes?.booked_by?.find(i => String(getId(i)) === String(key))?.name ?? key;
+
+    const getPropertyName = (key) =>
+        filtersFromRes?.properties?.find(p => String(getId(p)) === String(key))?.property_name ?? key;
 
     const handleViewToggle = (type) => setViewType(type);
 
@@ -435,7 +484,7 @@ export default function Allbookings() {
         try {
             const response = await DynamicFiltersAPI()
             if (response.data.success) {
-                setFiltersfromRes(response.data.response)
+                setFiltersfromRes(response.data.response);
                 setFilteredBookedByList(response.data.response.booked_by || []);
                 setFilteredLocationList(response.data.response.locations || []);
                 setFilteredPropertyList(response.data.response.properties || []);
@@ -452,9 +501,9 @@ export default function Allbookings() {
                 setAssignments(response.data.response.bookings)
                 setPagination(response.data.response.pagination)
                 setTabCount(response.data.response?.tab_counts)
-                setOptionsBookedByList(response.data.response?.filters_applied?.booked_by || []);
-                setOptionsLocationList(response.data.response?.filters_applied?.locations || []);
-                setOptionsPropertyList(response.data.response?.filters_applied?.properties)
+                // setOptionsBookedByList(response.data.response?.filters_applied?.booked_by || []);
+                // setOptionsLocationList(response.data.response?.filters_applied?.locations || []);
+                // setOptionsPropertyList(response.data.response?.filters_applied?.properties)
                 setBooking_count(response.data.response.pagination.total_items);
                 setTotalPages(response.data.response.pagination.total_pages)
             }
@@ -540,9 +589,20 @@ export default function Allbookings() {
         }));
     };
 
+    // useEffect(() => {
+    //     function handleClickOutside(e) {
+    //         if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+    //             setShowBookedByList(false);
+    //             setShowLocationList(false);
+    //             setPropertyShowList(false);
+    //         }
+    //     }
+    //     document.addEventListener("mousedown", handleClickOutside);
+    //     return () => document.removeEventListener("mousedown", handleClickOutside);
+    // }, []);
     useEffect(() => {
         function handleClickOutside(e) {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+            if (!e.target.closest("[data-filter-dropdown]")) {
                 setShowBookedByList(false);
                 setShowLocationList(false);
                 setPropertyShowList(false);
@@ -4551,7 +4611,8 @@ export default function Allbookings() {
                                                 // }}
                                                 onChange={(date) => {
                                                     setInactiveFrom(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_from: formatted
@@ -4578,7 +4639,8 @@ export default function Allbookings() {
 
                                                 onChange={(date) => {
                                                     setInactiveTo(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_to: formatted
@@ -4609,7 +4671,8 @@ export default function Allbookings() {
                                                 // }}
                                                 onChange={(date) => {
                                                     setInactiveFrom(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_from: formatted
@@ -4635,7 +4698,8 @@ export default function Allbookings() {
                                                 // }}
                                                 onChange={(date) => {
                                                     setInactiveTo(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_to: formatted
@@ -4665,7 +4729,8 @@ export default function Allbookings() {
                                                 // }}
                                                 onChange={(date) => {
                                                     setInactiveFrom(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_from: formatted
@@ -4690,7 +4755,8 @@ export default function Allbookings() {
                                                 // }}
                                                 onChange={(date) => {
                                                     setInactiveTo(date);
-                                                    const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    // const formatted = date ? date.toISOString().split("T")[0] : "";
+                                                    const formatted = toLocalDateString(date);
                                                     setTempDateFilter(prev => ({
                                                         ...prev,
                                                         date_to: formatted
@@ -4828,7 +4894,7 @@ export default function Allbookings() {
 
 
 
-                    <div className="filter-compnay-details" ref={wrapperRef}>
+                    <div className="filter-compnay-details" data-filter-dropdown>
                         <p className='d-flex justify-content-between font-18 mb-3'>
                             Booked by
                             <Image
@@ -4862,7 +4928,7 @@ export default function Allbookings() {
 
                         {/* Selected chips — array, same as Location/Property */}
                         <div className="d-flex gap-2 mt-3 flex-wrap">
-                            {optionsBookedByList?.map((uid, idx) => (
+                            {/* {optionsBookedByList?.map((uid, idx) => (
                                 <div
                                     key={idx}
                                     style={{
@@ -4875,13 +4941,23 @@ export default function Allbookings() {
                                         fontWeight: 500,
                                         color: "#463527"
                                     }}
-                                >
-                                    {/* Look up name from booked_by list using uid */}
+                                >                                    
                                     {filtersFromRes?.booked_by?.find(item => item.uid === uid)?.name ?? uid}
                                     <span
                                         style={{ marginLeft: "8px", cursor: "pointer", color: "#463527" }}
                                         onClick={() => handleRemoveBookedBy(idx)}
                                     >
+                                        <Image src="/images/icons/x-circle.svg" width={20} height={20} alt="Remove" />
+                                    </span>
+                                </div>
+                            ))} */}
+                            {optionsBookedByList.map((key, idx) => (
+                                <div
+                                    key={String(key)}
+                                    style={{ display: "flex", alignItems: "center", border: "1px solid #4635271F", borderRadius: "24px", padding: "13px 14px", background: "transparent", fontWeight: 500, color: "#463527" }}
+                                >
+                                    {getBookedByName(key)}
+                                    <span style={{ marginLeft: "8px", cursor: "pointer" }} onClick={() => handleRemoveBookedBy(idx)}>
                                         <Image src="/images/icons/x-circle.svg" width={20} height={20} alt="Remove" />
                                     </span>
                                 </div>
@@ -4905,7 +4981,7 @@ export default function Allbookings() {
                                     zIndex: 10,
                                 }}
                             >
-                                {filteredBookedByList?.length > 0 ? (
+                                {/* {filteredBookedByList?.length > 0 ? (
                                     filteredBookedByList
                                         // hide already-selected items
                                         .filter(item => !optionsBookedByList.includes(item.uid))
@@ -4925,7 +5001,26 @@ export default function Allbookings() {
                                         ))
                                 ) : (
                                     <li className="px-2 py-1 text-muted">No result found</li>
-                                )}
+                                )} */}
+                                {(() => {
+                                    const available = (filteredBookedByList || []).filter(
+                                        item => !optionsBookedByList.some(k => String(k) === String(getId(item)))
+                                    );
+                                    return available.length > 0 ? available.map(item => (
+                                        <li
+                                            key={getId(item)}
+                                            className="px-2 py-1"
+                                            style={{ cursor: "pointer" }}
+                                            onMouseDown={() => {
+                                                setOptionsBookedByList(prev => [...prev, getId(item)]);
+                                                setBookedByInput("");
+                                                setShowBookedByList(false);
+                                            }}
+                                        >
+                                            {item.name}
+                                        </li>
+                                    )) : <li className="px-2 py-1 text-muted">No result found</li>;
+                                })()}
                             </ul>
                         )}
 
@@ -4934,7 +5029,7 @@ export default function Allbookings() {
                     {canListCompany && (
                         <div className='filter-compnay-details'>
                             <p className='d-flex justify-content-between font-18 ' >Companies <Image style={{ transform: 'rotate(180deg)' }} src='./images/icons/bottom-arrow.svg' className='img-fluid' width={12} height={12} alt='bottom' /> </p>
-                            <ul className="company-name-filter">
+                            {/* <ul className="company-name-filter">
                                 {filtersFromRes?.companies?.length > 0 &&
                                     filtersFromRes.companies.map((company, index) => (
                                         <li key={company?.id ?? index}>
@@ -4966,34 +5061,35 @@ export default function Allbookings() {
                                     ))
                                 }
                                 <>
-                                    {/* 
-                            <li>
-
-                                <input type='checkbox' id='confirm-add1' className='custom-checkbox' />
-                                <label htmlFor='confirm-add1'>Delhivery</label>
-
-                            </li>
-
-                            <li>
-
-                                <input type='checkbox' id='confirm-add2' className='custom-checkbox' />
-                                <label htmlFor='confirm-add2'>GPS Renewables</label>
-
-                            </li>
-                            <li>
-
-                                <input type='checkbox' id='confirm-add3' className='custom-checkbox' />
-                                <label htmlFor='confirm-add3'>Schlumberger</label>
-
-                            </li>
-
-                            <li className="">
-
-                                <input type='checkbox' id='confirm-add4' className='custom-checkbox' />
-                                <label htmlFor='confirm-add4'>Picus Capital</label>
-
-                            </li> */}
+                                    
                                 </>
+                            </ul> */}
+                            <ul className="company-name-filter">
+                                {filtersFromRes?.companies?.length > 0 &&
+                                    filtersFromRes.companies.map((company, index) => {
+                                        const companyKey = String(company?.id ?? company?.uid ?? index);
+                                        return (
+                                            <li key={companyKey}>
+                                                <input
+                                                    type="checkbox"
+                                                    id={`company-${companyKey}`}
+                                                    className="custom-checkbox"
+                                                    checked={selectedCompanies.includes(companyKey)}
+                                                    onChange={(e) => {
+                                                        setSelectedCompanies(prev =>
+                                                            e.target.checked
+                                                                ? [...prev, companyKey]
+                                                                : prev.filter(id => id !== companyKey)
+                                                        );
+                                                    }}
+                                                />
+                                                <label htmlFor={`company-${companyKey}`}>
+                                                    {company?.company_name}
+                                                </label>
+                                            </li>
+                                        );
+                                    })
+                                }
                             </ul>
                             <hr style={{ margin: '15px 0 30px' }} ></hr>
                         </div>
@@ -5075,7 +5171,7 @@ export default function Allbookings() {
                             </ul>
                         )}
                     </div> */}
-                    <div className="filter-compnay-details" ref={wrapperRef}>
+                    <div className="filter-compnay-details" data-filter-dropdown>
                         <p className='d-flex justify-content-between font-18 mb-3'>
                             Location
                             <Image style={{ transform: 'rotate(180deg)' }} src='./images/icons/bottom-arrow.svg' className='img-fluid' width={12} height={12} alt='bottom' />
@@ -5262,7 +5358,7 @@ export default function Allbookings() {
                             </ul>
                         )}
                     </div> */}
-                    <div className="filter-compnay-details" ref={wrapperRef}>
+                    <div className="filter-compnay-details" data-filter-dropdown>
                         <p className='d-flex justify-content-between font-18 mb-3'>
                             Property
                             <Image style={{ transform: 'rotate(180deg)' }} src='./images/icons/bottom-arrow.svg' className='img-fluid' width={12} height={12} alt='bottom' />
@@ -5287,7 +5383,7 @@ export default function Allbookings() {
                         </div>
 
                         <div className="d-flex gap-2 mt-3 flex-wrap">
-                            {optionsPropertyList?.map((opt, idx) => (
+                            {/* {optionsPropertyList?.map((opt, idx) => (
                                 <div
                                     key={idx}
                                     style={{
@@ -5304,6 +5400,17 @@ export default function Allbookings() {
                                         <Image src="/images/icons/x-circle.svg" width={20} height={20} alt="Remove" />
                                     </span>
                                 </div>
+                            ))} */}
+                            {optionsPropertyList.map((key, idx) => (
+                                <div
+                                    key={String(key)}
+                                    style={{ display: "flex", alignItems: "center", border: "1px solid #4635271F", borderRadius: "24px", padding: "13px 14px", background: "transparent", fontWeight: 500, color: "#463527" }}
+                                >
+                                    {getPropertyName(key)}
+                                    <span style={{ marginLeft: "8px", cursor: "pointer" }} onClick={() => handleRemoveProperty(idx)}>
+                                        <Image src="/images/icons/x-circle.svg" width={20} height={20} alt="Remove" />
+                                    </span>
+                                </div>
                             ))}
                         </div>
 
@@ -5313,9 +5420,9 @@ export default function Allbookings() {
                                 padding: "8px", listStyle: "none", maxHeight: "150px", overflowY: "auto",
                                 background: "#fff", position: "absolute", width: "92%", zIndex: 10,
                             }}>
-                                {filteredPropertyList?.length > 0 ? (
+                                {/* {filteredPropertyList?.length > 0 ? (
                                     filteredPropertyList
-                                        .filter(item => !optionsPropertyList.includes(item.uid))
+                                        .filter(item => !optionsPropertyList?.includes(item.uid))
                                         .map((item, idx) => (
                                             <li
                                                 key={idx}
@@ -5332,14 +5439,36 @@ export default function Allbookings() {
                                         ))
                                 ) : (
                                     <li className="px-2 py-1 text-muted">No result found</li>
-                                )}
+                                )} */}
+                                {(() => {
+                                    const available = (filteredPropertyList || []).filter(
+                                        item => !optionsPropertyList.some(k => String(k) === String(getId(item)))
+                                    );
+                                    return available.length > 0 ? available.map(item => (
+                                        <li
+                                            key={getId(item)}
+                                            className="px-2 py-1"
+                                            style={{ cursor: "pointer" }}
+                                            onMouseDown={() => {
+                                                setPropertyInput("");
+                                                setPropertyShowList(false);
+                                                setOptionsPropertyList(prev => [...prev, getId(item)]);
+                                            }}
+                                        >
+                                            {item.property_name}
+                                        </li>
+                                    )) : <li className="px-2 py-1 text-muted">No result found</li>;
+                                })()}
                             </ul>
                         )}
                     </div>
                 </Modal.Body>
 
                 <Modal.Footer className='d-flex align-items-center justify-content-between '>
-                    <p onClick={filterClose}>
+                    {/* <p onClick={filterClose}>
+                        Clear all
+                    </p> */}
+                    <p onClick={clearAllFilters} style={{ cursor: "pointer" }}>
                         Clear all
                     </p>
                     <Button variant="" className='search-btn complete-form-btn' style={{ padding: '13px 25px', borderRadius: '0' }}
@@ -5369,7 +5498,8 @@ export default function Allbookings() {
                                 ...filteredOptions,
                                 locations: optionsLocationList?.[0] || "",
                                 properties: optionsPropertyList?.[0] || "",
-                                companies: selectedCompanies.join(","),
+                                // companies: selectedCompanies.join(","),
+                                companies: selectedCompanies.length ? selectedCompanies.join(",") : (paramCompanyUid || ""),
                                 booked_by: optionsBookedByList.join(","),   // FIX: was selectedBookedBy
                                 date_type: tempDateFilter.date_type,
                                 date_from: tempDateFilter.date_from,
