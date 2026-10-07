@@ -61,9 +61,9 @@ export const ModifyCheckout = ({ showModifyCheckout, handleModifyCheckoutClose, 
 
                         <div className='bm-contact mt-4'>
                             <p className='mb-1' style={{ fontWeight: '500', fontSize: '14px' }}> Booking Manager Contact </p>
-                            <p className='mb-0 d-flex gap-2 align-items-center font-18' >  CasaMelhor Admin, </p>
+                            <p className='mb-0 d-flex gap-2 align-items-center font-18' >  {bookingDetailData?.created_by?.role_name}, </p>
                             <p className='mb-0 d-flex gap-2 align-items-center font-18' >
-                                gloria@slb.com,  +91 7876776655
+                                {bookingDetailData?.created_by?.email},  {bookingDetailData?.created_by?.phone}
 
                             </p>
 
@@ -128,7 +128,7 @@ export const ModifyCheckout = ({ showModifyCheckout, handleModifyCheckoutClose, 
                     <div className='booking-details-br mt-3 mb-3'>
                         <p className='mb-0' >Check-in:  <strong>{convertDayMonthcommaYear(bookingDetailData?.check_in_date)}</strong> </p>
                         <p className='mb-0'>Checkout: <strong>{convertDayMonthcommaYear(inactiveTo)}</strong></p>
-                        <p className='mt-2 mb-0'>Duration: 4 nights</p>
+                        <p className='mt-2 mb-0'>Duration: {calculateNights(bookingDetailData?.check_in_date, inactiveTo)} nights</p>
 
                     </div>
 
