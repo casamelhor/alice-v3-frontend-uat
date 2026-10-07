@@ -11,6 +11,7 @@ import ToastContainer from "react-bootstrap";
 import { alert_success, alert_danger } from "@/utils/Alerts/TostifyAlerts";
 import { formatToDayDate } from '@/utils/formatTime';
 import { checkPermission } from "@/utils/helper";
+import { integrationBadgeAPI } from "@/services/integrationProvider";  // integration: alice_v3_claude — w7
 
 export default function Header() {
 
@@ -30,6 +31,17 @@ export default function Header() {
   const canAddBooking = permissionBookingMain === true || permissionBookingMain?.can_add;
   //property permission
   const canListProperty = permissionProperty === true || permissionProperty?.can_list;
+  // integration: alice_v3_claude — w7 — booking integrations admin (module "integration"; sign in again after it is seeded)
+  const permissionIntegration = checkPermission(permissionArray, "integration");  // integration: alice_v3_claude — w7
+  const canListIntegration = permissionIntegration === true || permissionIntegration?.can_list;  // integration: alice_v3_claude — w7
+  const isCasaMelhorAdmin = loginData?.user_role?.role_name === "CasaMelhor Admin";  // integration: alice_v3_claude — w7
+  const [integrationBadge, setIntegrationBadge] = useState(0);  // integration: alice_v3_claude — w7
+  useEffect(() => {  // integration: alice_v3_claude — w7 — items needing attention, for the Admin badge
+    if (!canListIntegration) return;
+    integrationBadgeAPI().then((res) => {
+      if (res?.status === 200) setIntegrationBadge(res.data?.response?.needs_attention || 0);
+    }).catch(() => {});
+  }, [canListIntegration]);  // integration: alice_v3_claude — w7
   console.log(permissionArray)
   // console.log('success', permissionBookingMain)
 
@@ -177,6 +189,24 @@ export default function Header() {
                     className={pathname === "/company/reporting" ? "active" : ""}
                   >
                     <Link href={`/company/reporting?uid=${loginData?.company_uid}`}>Insights</Link>
+                  </li>
+                )}
+                {/* integration: alice_v3_claude — w7 — Admin menu: booking integrations and notification settings */}
+                {(canListIntegration || isCasaMelhorAdmin) && (
+                  <li className={pathname?.startsWith("/Integrations") || pathname === "/NotificationSettings" ? "active" : ""}>
+                    <Dropdown className="intg-admin-menu">
+                      <Dropdown.Toggle variant="" id="admin-menu" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        Admin
+                        {integrationBadge > 0 && (
+                          <span aria-label={`${integrationBadge} integration items need attention`} style={{ background: "#b3261e", color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: 9, padding: "1px 7px" }}>{integrationBadge}</span>
+                        )}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {canListIntegration && <Dropdown.Item as={Link} href="/Integrations">Integrations — health</Dropdown.Item>}
+                        {canListIntegration && <Dropdown.Item as={Link} href="/Integrations/Inbox">Integrations — inbox</Dropdown.Item>}
+                        {isCasaMelhorAdmin && <Dropdown.Item as={Link} href="/NotificationSettings">Notification settings</Dropdown.Item>}
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </li>
                 )}
 

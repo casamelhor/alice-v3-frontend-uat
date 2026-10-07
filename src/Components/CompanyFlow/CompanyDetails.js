@@ -1877,6 +1877,7 @@
 "use client"
 import React from 'react'
 import { useEffect, useState } from "react";
+import CompanyIntegrationsTab from '../Integrations/CompanyIntegrationsTab'; // integration: alice_v3_claude — w7
 import Header from '../Header/Header'
 import { Row, Col, Container, Button, Tabs, Tab, Table, Modal } from 'react-bootstrap';
 import Link from 'next/link';
@@ -1910,6 +1911,8 @@ export default function CompanyDetails() {
     const permissionBooking = checkPermission(permissionArray, "booking");
     const permissionSetting = checkPermission(permissionArray, "company_settings");
     const permissionUser = checkPermission(permissionArray, "user");
+    const permissionIntegration = checkPermission(permissionArray, "integration"); // integration: alice_v3_claude — w7
+    const canListIntegration = permissionIntegration === true || permissionIntegration?.can_list; // integration: alice_v3_claude — w7
     const permissionProperty = checkPermission(permissionArray, "property");
     const permissionPropertyAssign = checkPermission(permissionArray, "property_assignment");
 
@@ -3274,6 +3277,12 @@ export default function CompanyDetails() {
                                                 </Table>
                                             </Col>
                                         </Row>
+                                    </Tab>
+                                )}
+                                {/* integration: alice_v3_claude — w7 — Integrations tab */}
+                                {canListIntegration && (
+                                    <Tab eventKey="integrations" title="Integrations">
+                                        <CompanyIntegrationsTab companyId={companyDetail?.id} />
                                     </Tab>
                                 )}
                             </Tabs>

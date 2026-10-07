@@ -130,3 +130,13 @@ export const NotificationConfigUrl={
   UpdateGroupEmail:"alice-notifications-api/update-notification-config-api/",
   PropertyOverride:"alice-notifications-api/update-notification-config-property-api/"
 }
+
+// integration: alice_v3_claude — w7 — booking integrations admin (backend: alice_channels/api/urls.py)
+export const IntegrationUrl = {
+  Health: "alice-channels-api/health/",
+  Badge: "alice-channels-api/badge/",
+  Flags: "alice-channels-api/flags/",
+  Inbox: "alice-channels-api/inbox/",
+  Connections: "alice-channels-api/connections/",
+  ConnectOptions: "alice-channels-api/connect-options/",
+};

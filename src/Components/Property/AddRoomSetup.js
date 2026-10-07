@@ -9,6 +9,7 @@ import { CreateRoomAPI, CreateRoomPhotosAPI } from "@/services/provider";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { alert_danger, alert_info, alert_success } from '@/utils/Alerts/TostifyAlerts';
 import { ToastContainer } from 'react-toastify';
+import { integrationConnectionsAPI } from '@/services/integrationProvider'; // integration: alice_v3_claude — w7
 
 export default function AddRoomSetup() {
     const [id, setId] = useState(null);
@@ -393,6 +394,11 @@ export default function AddRoomSetup() {
             if (response?.data?.success) {
 
                 alert_success("Room created successfully!");
+                // integration: alice_v3_claude — w7 — a room in a property that takes provider bookings must be mapped before they can land in it
+                integrationConnectionsAPI({ property_uid: uid }).then((res) => {
+                    const names = (res?.status === 200 ? res.data?.response || [] : []).map((c) => c.provider);
+                    if (names.length) alert_info(`This property takes bookings from ${[...new Set(names)].join(" and ")}. Map the new room under Property → Channels so those bookings can land in it.`);
+                }).catch(() => {});
 
                 response?.data?.response?.map((item, index) => {
                     handleRoomPhotos(item?.uid, index);
